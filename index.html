@@ -262,8 +262,40 @@
             gap: var(--spacing-md);
         }
 
-        .severity-input {
-            width: 60px;
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(to right, var(--color-primary) 0%, var(--color-primary) 50%, var(--color-border) 50%, var(--color-border) 100%);
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input[type="range"]::-moz-range-track {
+            background: transparent;
+            border: none;
         }
 
         .severity-label {
@@ -594,7 +626,7 @@
                     </div>
                     <div class="menu-item" id="injurySearchBtn">
                         <h3>💊 Injury Search</h3>
-                        <p>Look up exercises and stretches (testing)</p>
+                        <p>Look up exercises and stretches</p>
                     </div>
                 </div>
             </div>
@@ -637,7 +669,7 @@
                     <div class="form-group">
                         <label>Severity Level <span class="required">*</span></label>
                         <div class="severity-container">
-                            <input type="number" id="reportSeverity" class="severity-input" min="1" max="10" value="5" required>
+                            <input type="range" id="reportSeverity" min="1" max="10" value="5" required style="flex: 1;">
                             <span class="severity-label" id="severityLabel">5 / 10</span>
                         </div>
                     </div>
@@ -712,6 +744,9 @@
                 <div class="search-bar">
                     <input type="text" id="injurySearchInput" placeholder="Search for common injuries...">
                 </div>
+                <div style="margin-bottom: var(--spacing-lg);">
+                    <button class="btn btn-primary" id="addInjuryBtn" style="width: 100%;">+ Add New Injury</button>
+                </div>
                 <div id="injurySearchResults"></div>
             </div>
 
@@ -734,6 +769,7 @@
             init() {
                 this.loadFromStorage();
                 this.loadInjuryDatabase();
+                this.loadInjuriesFromStorage();
             },
             
             loadFromStorage() {
@@ -747,81 +783,25 @@
             
             loadInjuryDatabase() {
                 this.injuries = [
-                    {
-                        id: '1',
-                        name: 'Ankle Sprain',
-                        description: 'Stretching or tearing of ankle ligaments',
-                        exercises: [
-                            'Ankle alphabet - trace letters with your foot',
-                            'Calf raises - rise up on toes, hold 2 seconds',
-                            'Single leg balance - stand on one leg for 30 seconds'
-                        ],
-                        stretches: [
-                            'Gastrocnemius stretch - bend one knee, straighten the other',
-                            'Soleus stretch - both knees bent, lean forward',
-                            'Dorsiflexion - pull toes toward shins'
-                        ]
-                    },
-                    {
-                        id: '2',
-                        name: 'Hamstring Strain',
-                        description: 'Injury to the hamstring muscle group in the back of the thigh',
-                        exercises: [
-                            'Glute bridges - squeeze glutes at the top',
-                            'Leg curls - lie on back, bend knees toward body',
-                            'Dead bug - opposite arm and leg extension'
-                        ],
-                        stretches: [
-                            'Standing hamstring stretch - forward fold',
-                            'Seated hamstring stretch - bend forward from hips',
-                            'Supine hamstring stretch - pull leg toward chest'
-                        ]
-                    },
-                    {
-                        id: '3',
-                        name: 'Shoulder Impingement',
-                        description: 'Compression of tendons in the shoulder joint',
-                        exercises: [
-                            'Band pull-aparts - resistance band exercises',
-                            'Reverse fly - face down, lift arms to sides',
-                            'Prone Y-T-W - prone position shoulder movements'
-                        ],
-                        stretches: [
-                            'Cross-body shoulder stretch - pull arm across chest',
-                            'Doorway stretch - arm on doorframe, lean forward',
-                            'Sleeper stretch - lie on side, pull arm'
-                        ]
-                    },
-                    {
-                        id: '4',
-                        name: 'ACL Tear',
-                        description: 'Rupture of the anterior cruciate ligament in the knee',
-                        exercises: [
-                            'Quad sets - tighten thigh muscles',
-                            'Hamstring curls - bend knee against resistance',
-                            'Single leg balance - proprioceptive training'
-                        ],
-                        stretches: [
-                            'Quad stretch - pull foot toward buttocks',
-                            'Hamstring stretch - forward fold',
-                            'Calf stretch - lean against wall'
-                        ]
-                    },
-                    {
-                        id: '5',
-                        name: 'Tennis Elbow',
-                        description: 'Lateral epicondylitis - inflammation on outside of elbow',
-                        exercises: [
-                            'Wrist curls - light resistance training',
-                            'Eccentric exercises - slow negative movements',
-                            'Isometric holds - static tension'
-                        ],
-                        stretches: [
-                            'Wrist extensor stretch - palm down, press back',
-                            'Prayer stretch - hands together, lower',
-                            'Reverse prayer - hands together behind back'
-                        ]
-                    }
+                    { id: '1', name: 'Ankle sprain (mild–moderate)', description: 'Stretching or tearing of ankle ligaments', exercises: ['Ankle alphabet - trace letters with your foot', 'Calf raises - rise up on toes, hold 2 seconds', 'Single leg balance - stand on one leg for 30 seconds'], stretches: ['Gastrocnemius stretch - bend one knee, straighten the other', 'Soleus stretch - both knees bent, lean forward', 'Dorsiflexion - pull toes toward shins'] },
+                    { id: '2', name: 'Muscle strain (general)', description: 'General muscle strain or pull', exercises: ['Gentle stretching', 'Light resistance work', 'Progressive strengthening exercises'], stretches: ['Full body stretching routine', 'Foam rolling', 'Static stretches'] },
+                    { id: '3', name: 'Groin strain', description: 'Strain to the inner thigh and groin muscles', exercises: ['Adductor strengthening', 'Hip mobility work', 'Core stability exercises'], stretches: ['Butterfly stretch', 'Adductor stretch', 'Hip flexor stretch'] },
+                    { id: '4', name: 'Calf strain', description: 'Injury to the calf muscle', exercises: ['Calf raises', 'Toe walking', 'Heel walks'], stretches: ['Downward dog', 'Wall calf stretch', 'Towel calf stretch'] },
+                    { id: '5', name: 'Hip flexor strain', description: 'Strain to the muscles that flex the hip', exercises: ['Quadriceps strengthening', 'Glute activation', 'Hip flexor strengthening'], stretches: ['Low lunge stretch', 'Lying hip flexor stretch', 'Couch stretch'] },
+                    { id: '6', name: 'Shin splints (medial tibial stress syndrome)', description: 'Pain along the shin bone from repetitive stress', exercises: ['Toe raises', 'Shin strengthening', 'Calf stretches'], stretches: ['Calf stretching', 'Anterior tibialis stretch', 'Full leg stretching'] },
+                    { id: '7', name: "Runner's knee (patellofemoral pain syndrome)", description: 'Pain around the kneecap from overuse', exercises: ['Quad strengthening', 'Glute activation', 'Hamstring work'], stretches: ['Quadriceps stretch', 'IT band stretch', 'Hamstring stretch'] },
+                    { id: '8', name: 'IT band syndrome', description: 'Inflammation of the iliotibial band', exercises: ['Glute strengthening', 'Hip abduction work', 'Core stability'], stretches: ['IT band stretch', 'Pigeon pose', 'Cross-leg stretch'] },
+                    { id: '9', name: 'Plantar fasciitis', description: 'Inflammation of the tissue on the bottom of the foot', exercises: ['Calf raises', 'Foot intrinsic strengthening', 'Arch support work'], stretches: ['Plantar fascia stretch', 'Calf stretch', 'Towel stretch under foot'] },
+                    { id: '10', name: 'Achilles tendinitis (non-rupture)', description: 'Inflammation of the Achilles tendon', exercises: ['Eccentric calf exercises', 'Gentle calf raises', 'Isometric holds'], stretches: ['Calf stretch', 'Soleus stretch', 'Downward dog'] },
+                    { id: '11', name: 'Tennis elbow (lateral epicondylitis)', description: 'Inflammation on the outside of the elbow', exercises: ['Wrist curls', 'Eccentric exercises', 'Isometric holds'], stretches: ['Wrist extensor stretch', 'Prayer stretch', 'Reverse prayer stretch'] },
+                    { id: '12', name: "Golfer's elbow (medial epicondylitis)", description: 'Inflammation on the inside of the elbow', exercises: ['Wrist flexor strengthening', 'Forearm work', 'Grip strengthening'], stretches: ['Wrist flexor stretch', 'Forearm stretch', 'Cross-body stretch'] },
+                    { id: '13', name: 'Rotator cuff tendinitis / impingement (non-tear)', description: 'Inflammation or compression of the rotator cuff', exercises: ['Band pull-aparts', 'External rotation work', 'Scapular stabilization'], stretches: ['Cross-body shoulder stretch', 'Doorway stretch', 'Sleeper stretch'] },
+                    { id: '14', name: 'Shoulder bursitis', description: 'Inflammation of the fluid sacs in the shoulder', exercises: ['Pendulum swings', 'Isometric holds', 'Gentle rotations'], stretches: ['Shoulder rolls', 'Cross-body stretch', 'Sleeper stretch'] },
+                    { id: '15', name: 'Lower back strain', description: 'Muscle strain in the lower back', exercises: ['Core strengthening', 'Glute activation', 'Back extensions'], stretches: ['Child\'s pose', 'Piriformis stretch', 'Cat-cow stretch'] },
+                    { id: '16', name: 'Neck strain', description: 'Muscle strain in the neck', exercises: ['Neck isometric exercises', 'Shoulder rolls', 'Upper back strengthening'], stretches: ['Neck stretches', 'Shoulder stretches', 'Chest stretches'] },
+                    { id: '17', name: 'Wrist sprain (mild)', description: 'Stretching or tearing of wrist ligaments', exercises: ['Wrist circles', 'Grip strengthening', 'Forearm exercises'], stretches: ['Wrist flexor stretch', 'Wrist extensor stretch', 'Forearm stretch'] },
+                    { id: '18', name: 'Finger sprain / jammed finger', description: 'Injury to finger joints or ligaments', exercises: ['Finger strengthening', 'Gentle finger movements', 'Hand grip work'], stretches: ['Finger stretches', 'Hand stretches', 'Forearm stretches'] },
+                    { id: '19', name: 'Contusions (bruises)', description: 'Bruising from blunt force trauma', exercises: ['Gentle range of motion', 'Light activity as tolerated', 'Progressive strengthening'], stretches: ['Gentle stretching', 'Light mobility work', 'Range of motion exercises'] }
                 ];
             },
             
@@ -857,6 +837,31 @@
                     injury.name.toLowerCase().includes(query.toLowerCase()) ||
                     injury.description.toLowerCase().includes(query.toLowerCase())
                 );
+            },
+
+            addInjury(injuryData) {
+                const newInjury = {
+                    id: Date.now().toString(),
+                    name: injuryData.name,
+                    description: injuryData.description,
+                    exercises: injuryData.exercises,
+                    stretches: injuryData.stretches
+                };
+                this.injuries.push(newInjury);
+                this.saveInjuriesToStorage();
+            },
+
+            loadInjuriesFromStorage() {
+                const customInjuries = localStorage.getItem(`trainerAppCustomInjuries_${this.trainerId}`);
+                if (customInjuries) {
+                    const parsed = JSON.parse(customInjuries);
+                    this.injuries = [...this.injuries, ...parsed];
+                }
+            },
+
+            saveInjuriesToStorage() {
+                const customInjuries = this.injuries.filter(i => i.id.length > 5);
+                localStorage.setItem(`trainerAppCustomInjuries_${this.trainerId}`, JSON.stringify(customInjuries));
             }
         };
 
@@ -953,9 +958,97 @@
             showScreen('injurySearch');
         });
 
+        document.getElementById('addInjuryBtn').addEventListener('click', () => {
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = 'addInjuryModal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Add New Injury</h3>
+                        <button class="modal-close" onclick="document.getElementById('addInjuryModal').remove()">✕</button>
+                    </div>
+                    <form id="addInjuryForm" style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
+                        <div class="form-group">
+                            <label>Injury Name <span class="required">*</span></label>
+                            <input type="text" id="newInjuryName" placeholder="e.g., Rotator Cuff Injury" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Description <span class="required">*</span></label>
+                            <textarea id="newInjuryDesc" placeholder="Describe the injury" required style="min-height: 80px;"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Exercises (one per line) <span class="required">*</span></label>
+                            <textarea id="newInjuryExercises" placeholder="Exercise 1&#10;Exercise 2&#10;Exercise 3" required style="min-height: 100px;"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Stretches (one per line) <span class="required">*</span></label>
+                            <textarea id="newInjuryStretches" placeholder="Stretch 1&#10;Stretch 2&#10;Stretch 3" required style="min-height: 100px;"></textarea>
+                        </div>
+                        <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
+                            <button type="submit" class="btn btn-success" style="flex: 1;">Save</button>
+                            <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="document.getElementById('addInjuryModal').remove()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            document.getElementById('addInjuryForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveNewInjury();
+            });
+        });
+
+        function saveNewInjury() {
+            const name = document.getElementById('newInjuryName').value.trim();
+            const description = document.getElementById('newInjuryDesc').value.trim();
+            const exercisesText = document.getElementById('newInjuryExercises').value.trim();
+            const stretchesText = document.getElementById('newInjuryStretches').value.trim();
+
+            if (!name || !description || !exercisesText || !stretchesText) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            const exercises = exercisesText.split('\n').map(e => e.trim()).filter(e => e);
+            const stretches = stretchesText.split('\n').map(e => e.trim()).filter(e => e);
+
+            if (exercises.length === 0 || stretches.length === 0) {
+                alert('Please provide at least one exercise and one stretch');
+                return;
+            }
+
+            const injuryData = {
+                name: name,
+                description: description,
+                exercises: exercises,
+                stretches: stretches
+            };
+
+            AppState.addInjury(injuryData);
+            document.getElementById('addInjuryModal').remove();
+            alert('Injury added successfully!');
+            document.getElementById('injurySearchInput').value = '';
+            document.getElementById('injurySearchResults').innerHTML = '';
+        }
+
         document.getElementById('reportSeverity').addEventListener('input', (e) => {
-            const value = Math.max(1, Math.min(10, parseInt(e.target.value) || 5));
+            const value = e.target.value;
             document.getElementById('severityLabel').textContent = `${value} / 10`;
+            const percent = ((value - 1) / 9) * 100;
+            e.target.style.background = `linear-gradient(to right, var(--color-primary) 0%, var(--color-primary) ${percent}%, var(--color-border) ${percent}%, var(--color-border) 100%)`;
+        });
+        
+        // Initialize slider gradient on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const slider = document.getElementById('reportSeverity');
+            if (slider) {
+                const value = slider.value;
+                const percent = ((value - 1) / 9) * 100;
+                slider.style.background = `linear-gradient(to right, var(--color-primary) 0%, var(--color-primary) ${percent}%, var(--color-border) ${percent}%, var(--color-border) 100%)`;
+            }
         });
         
         document.getElementById('newReportForm').addEventListener('submit', (e) => {
@@ -1171,7 +1264,13 @@
             });
             
             document.getElementById('printReportBtn').addEventListener('click', () => {
-                window.print();
+                try {
+                    if (!document.execCommand('print', false, null)) {
+                        window.print();
+                    }
+                } catch (e) {
+                    window.print();
+                }
             });
             
             showScreen('reportDetail');
